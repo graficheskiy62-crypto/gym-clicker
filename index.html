@@ -7,7 +7,11 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #121212;
+            background-image: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
             color: #ffffff;
             display: flex;
             justify-content: center;
@@ -16,37 +20,52 @@
             margin: 0;
         }
         .container {
-            background: #1e1e1e;
+            background: rgba(18, 18, 18, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             padding: 30px;
             border-radius: 20px;
             text-align: center;
             width: 90%;
             max-width: 400px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .img-placeholder {
-            width: 120px;
-            height: 120px;
-            object-fit: cover;
-            border-radius: 12px;
+        
+        .emoji-box {
+            font-size: 80px;
             margin: 10px 0;
-            background: #333;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
+            user-select: none;
+            transition: transform 0.15s ease;
+            cursor: default;
         }
+        .emoji-box.pop { transform: scale(1.2); }
+        .emoji-box:active { transform: scale(0.9); }
+
+        #equipment-info {
+            font-size: 16px;
+            color: #bbb;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        #equip-name { font-weight: 600; color: #fff; font-size: 18px; }
+        #equip-progress { background: #333; padding: 2px 8px; border-radius: 10px; font-size: 13px; }
+
         #strength-display {
             font-size: 28px;
             font-weight: bold;
             color: #944dff;
-            margin: 15px 0;
+            margin: 10px 0;
         }
         #train-btn {
             background: #0022ff;
             color: #944dff;
             border: none;
-            padding: 20px 40px;
-            font-size: 22px;
+            padding: 15px 30px;
+            font-size: 20px;
             font-weight: bold;
             border-radius: 60px;
             cursor: pointer;
@@ -55,83 +74,169 @@
         }
         #train-btn:hover { background: #410699; }
         #train-btn:active { transform: scale(0.96); }
-        .shop { margin-top: 25px; border-top: 1px solid #333; padding-top: 20px; }
-        .shop h2 { color: #ffffff; margin: 0 0 10px 0; font-size: 20px; }
-        #buy-btn {
-            background: #6C63FF;
-            color: white;
+        
+        .shop { 
+            margin-top: 25px; 
+            border-top: 1px solid rgba(255,255,255,0.15); 
+            padding-top: 20px; 
+        }
+        .shop h2 { color: #ffffff; margin: 0 0 15px 0; font-size: 20px; }
+        .shop-divider {
+            border: 0;
+            height: 1px;
+            background: rgba(255,255,255,0.15);
+            margin: 15px 0;
+        }
+        .shop h3 { color: #aaa; margin: 0 0 10px 0; font-size: 16px; font-weight: normal; }
+        
+        .shop-btn {
             border: none;
-            padding: 12px 24px;
-            font-size: 16px;
+            padding: 12px 16px;
+            font-size: 15px;
             border-radius: 10px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.2s, transform 0.1s;
             width: 100%;
+            margin-bottom: 10px;
+            white-space: normal;
+            word-break: break-word;
+            line-height: 1.3;
         }
+        #buy-btn { background: #6C63FF; color: white; }
         #buy-btn:hover:not(:disabled) { background: #5A52E0; }
-        #buy-btn:disabled { background: #444; cursor: not-allowed; opacity: 0.7; }
+        
+        #change-equip-btn { background: #00b49a; color: #051b21; font-weight: bold; }
+        #change-equip-btn:hover:not(:disabled) { background: #009d86; }
+        
+        .shop-btn:disabled { 
+            background: #444; color: #888; cursor: not-allowed; opacity: 0.7; 
+        }
+        .shop-btn:active:not(:disabled) { transform: scale(0.97); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- ЗАГЛУШКА 1: Главное изображение -->
-    <img id="main-img" class="img-placeholder" src="https://via.placeholder.com/150/944dff/ffffff?text=Кнопка" alt="Заглушка">
-
+    <div id="main-emoji" class="emoji-box">🪨</div>
+    <div id="equipment-info">
+        <span id="equip-name">Гиря</span>
+        <span id="equip-progress">1 / 12</span>
+    </div>
     <div id="strength-display">Количество силы: 0</div>
-    
     <button id="train-btn">Тренироваться</button>
 
     <div class="shop">
         <h2>Магазин улучшений</h2>
-        <!-- ЗАГЛУШКА 2: Изображение улучшения -->
-        <img id="shop-img" class="img-placeholder" src="https://via.placeholder.com/100/6C63FF/ffffff?text=Upgrade" alt="Заглушка">
-        <button id="buy-btn" disabled>НУЖНО 10</button>
+        <button id="buy-btn" class="shop-btn" disabled>НУЖНО 10</button>
+        
+        <hr class="shop-divider">
+        <h3>Смена тренажера</h3>
+        <button id="change-equip-btn" class="shop-btn" disabled>Заблокировано</button>
     </div>
 </div>
 
 <script>
-    // Состояние игры
+    // ── Состояние игры ──
     let strength = 0;
     let silaClick = 1;
     let upgradeCost = 10;
 
-    // Элементы DOM
+    // ── 12 Тренажеров ──
+    let equipIndex = 0;
+    const equipmentList = [
+        { emoji: '🪨', name: 'Гиря' },
+        { emoji: '🏋️', name: 'Штанга' },
+        { emoji: '🪢', name: 'Боевой канат' },
+        { emoji: '🏋️‍♂️', name: 'Гантели' },
+        { emoji: '🏃‍♂️', name: 'Беговая дорожка' },
+        { emoji: '🚴', name: 'Велотренажер' },
+        { emoji: '🤸‍♂️', name: 'Турник' },
+        { emoji: '🧘', name: 'Коврик для йоги' },
+        { emoji: '🏀', name: 'Фитбол' },
+        { emoji: '🪜', name: 'Шведская стенка' },
+        { emoji: '🥊', name: 'Боксёрская груша' },
+        { emoji: '🏗️', name: 'Силовая рама' }
+    ];
+    let equipCost = 50;
+
+    // ── Элементы DOM ──
     const strengthDisplay = document.getElementById('strength-display');
     const trainBtn = document.getElementById('train-btn');
     const buyBtn = document.getElementById('buy-btn');
-    const mainImg = document.getElementById('main-img');
-    const shopImg = document.getElementById('shop-img');
+    const changeEquipBtn = document.getElementById('change-equip-btn');
+    const mainEmoji = document.getElementById('main-emoji');
+    const equipName = document.getElementById('equip-name');
+    const equipProgress = document.getElementById('equip-progress');
 
-    // Обновление интерфейса
+    // ── Обновление интерфейса ──
     function updateUI() {
         strengthDisplay.textContent = `Количество силы: ${strength}`;
+        equipName.textContent = equipmentList[equipIndex].name;
+        equipProgress.textContent = `${equipIndex + 1} / ${equipmentList.length}`;
         
+        // Кнопка улучшения клика
         if (strength >= upgradeCost) {
             buyBtn.disabled = false;
-            buyBtn.textContent = `КУПИТЬ (${upgradeCost})`;
+            buyBtn.textContent = `УСИЛИТЬ КЛИК (${upgradeCost})`;
         } else {
             buyBtn.disabled = true;
             buyBtn.textContent = `НУЖНО ${upgradeCost}`;
         }
+
+        // Кнопка смены тренажера
+        const isMax = equipIndex >= equipmentList.length - 1;
+        if (isMax) {
+            changeEquipBtn.disabled = true;
+            changeEquipBtn.textContent = "🏆 Все тренажеры открыты!";
+            changeEquipBtn.style.background = "#2d6a4f";
+            changeEquipBtn.style.color = "#fff";
+        } else {
+            const nextEquip = equipmentList[equipIndex + 1];
+            if (strength >= equipCost) {
+                changeEquipBtn.disabled = false;
+                changeEquipBtn.textContent = `СМЕНИТЬ НА ${nextEquip.name} ${nextEquip.emoji} (${equipCost})`;
+            } else {
+                changeEquipBtn.disabled = true;
+                changeEquipBtn.textContent = `НУЖНО ${equipCost} для ${nextEquip.name}`;
+            }
+        }
     }
 
-    // Клик по кнопке тренировки
+    // ── Клик по тренировке ──
     trainBtn.addEventListener('click', () => {
         strength += silaClick;
+        mainEmoji.classList.add('pop');
+        setTimeout(() => mainEmoji.classList.remove('pop'), 100);
         updateUI();
     });
 
-    // Покупка улучшения
+    // ── Покупка улучшения клика ──
     buyBtn.addEventListener('click', () => {
         if (strength >= upgradeCost) {
             strength -= upgradeCost;
             silaClick += 1;
-            upgradeCost = Math.floor(upgradeCost * 1.5); // Аналог int() в Python
+            upgradeCost = Math.floor(upgradeCost * 1.5);
+            updateUI();
+        }
+    });
+
+    // ── Покупка смены тренажера ──
+    changeEquipBtn.addEventListener('click', () => {
+        const isMax = equipIndex >= equipmentList.length - 1;
+        if (!isMax && strength >= equipCost) {
+            strength -= equipCost;
+            equipIndex++;
+            const currentEquip = equipmentList[equipIndex];
+            mainEmoji.textContent = currentEquip.emoji;
+            equipCost = Math.floor(equipCost * 1.8);
             
-            // Пример смены картинки при покупке (как в вашем buy_skin)
-            // Чтобы использовать свои картинки, раскомментируйте строку ниже:
-            // mainImg.src = "путь_к_новой_картинке.png";
+            // Анимация смены
+            mainEmoji.style.transition = "transform 0.3s ease";
+            mainEmoji.style.transform = "scale(0) rotate(180deg)";
+            setTimeout(() => {
+                mainEmoji.style.transform = "scale(1) rotate(0deg)";
+                setTimeout(() => mainEmoji.style.transition = "", 300);
+            }, 150);
             
             updateUI();
         }
