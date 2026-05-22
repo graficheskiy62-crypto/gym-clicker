@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Спортзал - Кликер</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #1e1e1e;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        .img-placeholder {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin: 10px 0;
+            background: #333;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #strength-display {
+            font-size: 28px;
+            font-weight: bold;
+            color: #944dff;
+            margin: 15px 0;
+        }
+        #train-btn {
+            background: #0022ff;
+            color: #944dff;
+            border: none;
+            padding: 20px 40px;
+            font-size: 22px;
+            font-weight: bold;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            width: 100%;
+        }
+        #train-btn:hover { background: #410699; }
+        #train-btn:active { transform: scale(0.96); }
+        .shop { margin-top: 25px; border-top: 1px solid #333; padding-top: 20px; }
+        .shop h2 { color: #ffffff; margin: 0 0 10px 0; font-size: 20px; }
+        #buy-btn {
+            background: #6C63FF;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+        }
+        #buy-btn:hover:not(:disabled) { background: #5A52E0; }
+        #buy-btn:disabled { background: #444; cursor: not-allowed; opacity: 0.7; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- ЗАГЛУШКА 1: Главное изображение -->
+    <img id="main-img" class="img-placeholder" src="https://via.placeholder.com/150/944dff/ffffff?text=Кнопка" alt="Заглушка">
+
+    <div id="strength-display">Количество силы: 0</div>
+    
+    <button id="train-btn">Тренироваться</button>
+
+    <div class="shop">
+        <h2>Магазин улучшений</h2>
+        <!-- ЗАГЛУШКА 2: Изображение улучшения -->
+        <img id="shop-img" class="img-placeholder" src="https://via.placeholder.com/100/6C63FF/ffffff?text=Upgrade" alt="Заглушка">
+        <button id="buy-btn" disabled>НУЖНО 10</button>
+    </div>
+</div>
+
+<script>
+    // Состояние игры
+    let strength = 0;
+    let silaClick = 1;
+    let upgradeCost = 10;
+
+    // Элементы DOM
+    const strengthDisplay = document.getElementById('strength-display');
+    const trainBtn = document.getElementById('train-btn');
+    const buyBtn = document.getElementById('buy-btn');
+    const mainImg = document.getElementById('main-img');
+    const shopImg = document.getElementById('shop-img');
+
+    // Обновление интерфейса
+    function updateUI() {
+        strengthDisplay.textContent = `Количество силы: ${strength}`;
+        
+        if (strength >= upgradeCost) {
+            buyBtn.disabled = false;
+            buyBtn.textContent = `КУПИТЬ (${upgradeCost})`;
+        } else {
+            buyBtn.disabled = true;
+            buyBtn.textContent = `НУЖНО ${upgradeCost}`;
+        }
+    }
+
+    // Клик по кнопке тренировки
+    trainBtn.addEventListener('click', () => {
+        strength += silaClick;
+        updateUI();
+    });
+
+    // Покупка улучшения
+    buyBtn.addEventListener('click', () => {
+        if (strength >= upgradeCost) {
+            strength -= upgradeCost;
+            silaClick += 1;
+            upgradeCost = Math.floor(upgradeCost * 1.5); // Аналог int() в Python
+            
+            // Пример смены картинки при покупке (как в вашем buy_skin)
+            // Чтобы использовать свои картинки, раскомментируйте строку ниже:
+            // mainImg.src = "путь_к_новой_картинке.png";
+            
+            updateUI();
+        }
+    });
+
+    // Инициализация
+    updateUI();
+</script>
+
+</body>
+</html>
